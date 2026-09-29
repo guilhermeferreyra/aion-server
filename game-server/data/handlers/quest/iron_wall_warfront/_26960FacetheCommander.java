@@ -21,8 +21,8 @@ public class _26960FacetheCommander extends AbstractQuestHandler {
 	public void register() {
 		qe.registerQuestNpc(801280).addOnQuestStart(questId);
 		qe.registerQuestNpc(801280).addOnTalkEvent(questId);
-		qe.registerQuestNpc(802055).addOnTalkEvent(questId);
-		qe.registerQuestNpc(802054).addOnKillEvent(questId);
+		qe.registerQuestNpc(802054).addOnTalkEvent(questId);
+		qe.registerQuestNpc(233544).addOnKillEvent(questId);
 	}
 
 	@Override
