@@ -21,7 +21,7 @@ public class _24031EnemyAtTheDoorstep extends AbstractQuestHandler {
 
 	@Override
 	public void register() {
-		int[] npc_ids = { 204052, 801224, 203550, 203654, 204369 };
+		int[] npc_ids = { 204052, 801224, 203550, 203654, 204369, 730888, 730898 };
 		qe.registerOnQuestCompleted(questId);
 		qe.registerOnLevelChanged(questId);
 		qe.registerOnEnterWorld(questId);
