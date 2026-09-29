@@ -26,7 +26,7 @@ public class _14031AHyperVention extends AbstractQuestHandler {
 
 	@Override
 	public void register() {
-		int[] npc_ids = { 203700, 801216, 790001, 203183, 203989, };
+		int[] npc_ids = { 203700, 801216, 790001, 203183, 203989, 730888, 730898 };
 		qe.registerOnQuestCompleted(questId);
 		qe.registerOnLevelChanged(questId);
 		qe.registerOnEnterWorld(questId);
