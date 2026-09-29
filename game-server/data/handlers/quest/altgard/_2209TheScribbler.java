@@ -39,7 +39,7 @@ public class _2209TheScribbler extends AbstractQuestHandler {
 				if (env.getDialogActionId() == QUEST_SELECT)
 					return sendQuestDialog(env, 1011);
 				else
-					return sendQuestStartDialog(env);
+					return sendQuestStartDialog(env, workItems.getFirst());
 			}
 		} else if (qs.getStatus() == QuestStatus.START) {
 			switch (targetId) {
