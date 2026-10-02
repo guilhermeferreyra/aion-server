@@ -43,6 +43,7 @@ public class ShutdownHook extends Thread {
 
 	@Override
 	public void run() {
+		com.aionemu.gameserver.custom.adminapi.AdminApiServer.stop();
 		// this method is run when System.exit is triggered, or via other external events like console CTRL+C
 		remainingSeconds.compareAndSet(UNSET_DELAY, ShutdownConfig.DELAY);
 		for (int announceInterval = 1, expectedSeconds = remainingSeconds.get(); remainingSeconds.get() > 0;) {

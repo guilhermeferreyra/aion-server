@@ -188,6 +188,8 @@ public class GameServer {
 		LoginServer.getInstance().connect(nioServer);
 		if (GSConfig.ENABLE_CHAT_SERVER)
 			ChatServer.getInstance().connect(nioServer);
+
+		com.aionemu.gameserver.custom.adminapi.AdminApiServer.start();
 	}
 
 	/**
