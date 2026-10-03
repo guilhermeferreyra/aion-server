@@ -225,14 +225,14 @@ public abstract class Storage implements IStorage {
 	/**
 	 * Delete item from storage and mark for DB update
 	 */
-	Item delete(Item item, Player actor) {
+	public Item delete(Item item, Player actor) {
 		return delete(item, ItemDeleteType.DEFAULT, actor);
 	}
 
 	/**
 	 * Delete item from storage and mark for DB update
 	 */
-	Item delete(Item item, ItemDeleteType deleteType, Player actor) {
+	public Item delete(Item item, ItemDeleteType deleteType, Player actor) {
 		if (remove(item) != null) {
 			item.setPersistentState(PersistentState.DELETED);
 			deletedItems.add(item);

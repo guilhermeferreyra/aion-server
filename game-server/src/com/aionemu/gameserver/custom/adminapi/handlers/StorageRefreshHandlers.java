@@ -169,7 +169,7 @@ public final class StorageRefreshHandlers {
 	 * character's personal storage (cube + equipped + regular warehouse + pet bags +
 	 * cabinets), excluding the shared account warehouse and kinah.
 	 */
-	private static Map<String, Object> inventorySnapshot(Player player) {
+	static Map<String, Object> inventorySnapshot(Player player) {
 		Storage inventory = player.getInventory();
 		long total = countItems(inventory) + player.getEquipment().getEquippedItems().stream().mapToLong(Item::getItemCount).sum()
 			+ countItems(player.getWarehouse());
@@ -188,7 +188,7 @@ public final class StorageRefreshHandlers {
 		return m;
 	}
 
-	private static Map<String, Object> warehouseSnapshot(Storage characterWh, Storage accountWh) {
+	static Map<String, Object> warehouseSnapshot(Storage characterWh, Storage accountWh) {
 		Map<String, Object> m = new LinkedHashMap<>();
 		m.put("characterWarehouseItemCount", countItems(characterWh));
 		m.put("characterWarehouseLimit", characterWh.getLimit());

@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import com.aionemu.gameserver.configs.main.AdminApiConfig;
 import com.aionemu.gameserver.custom.adminapi.handlers.ExpressMailHandlers;
+import com.aionemu.gameserver.custom.adminapi.handlers.ItemOpsHandlers;
 import com.aionemu.gameserver.custom.adminapi.handlers.PlayerActionHandlers;
 import com.aionemu.gameserver.custom.adminapi.handlers.PlayerInsightHandlers;
 import com.aionemu.gameserver.custom.adminapi.handlers.StorageRefreshHandlers;
@@ -23,8 +24,8 @@ import com.sun.net.httpserver.HttpServer;
  * HTTP admin API consumed by the web portal. Serves {@code /admin/*} on a JDK built-in
  * {@link HttpServer}; every request must carry the shared secret in the
  * {@code x-admin-token} header. Read endpoints, live player actions, broadcasts, storage
- * refresh and express mail are implemented; the remaining routes stay registered and answer
- * 501 until their phase lands.
+ * refresh, express mail and item ops are implemented; the remaining routes stay registered
+ * and answer 501 until their phase lands.
  */
 public final class AdminApiServer {
 
@@ -97,11 +98,11 @@ public final class AdminApiServer {
 		new Route("POST", "/admin/validate-express-mail-batch", "express-mail", false, List.of(), List.of(), "Dry-run validation of multiple express mails.", ExpressMailHandlers::validateExpressMailBatch),
 		new Route("POST", "/admin/express-mail-batch", "express-mail", true, List.of(), List.of(), "Delivers multiple express mails (one letter per entry).", ExpressMailHandlers::sendExpressMailBatch),
 
-		new Route("POST", "/admin/validate-player-item-action", "item-ops", false, List.of(), List.of(), "Dry-run validation of a discard/slot/count repair on a stored item.", null),
-		new Route("POST", "/admin/discard-player-item", "item-ops", true, List.of(), List.of(), "Removes a stored item from the player's storage.", null),
-		new Route("POST", "/admin/repair-item-slot", "item-ops", true, List.of(), List.of(), "Fixes a corrupted or duplicated slot of a stored item.", null),
-		new Route("POST", "/admin/repair-item-count", "item-ops", true, List.of(), List.of(), "Fixes an item count that exceeds its max stack count.", null),
-		new Route("POST", "/admin/validate-item-storage", "item-ops", false, List.of(), List.of(), "Validates whether an item may live in the requested storage.", null),
+		new Route("POST", "/admin/validate-player-item-action", "item-ops", false, List.of(), List.of(), "Dry-run validation of a discard/slot/count repair on a stored item.", ItemOpsHandlers::validatePlayerItemAction),
+		new Route("POST", "/admin/discard-player-item", "item-ops", true, List.of(), List.of(), "Removes a stored item from the player's storage.", ItemOpsHandlers::discardPlayerItem),
+		new Route("POST", "/admin/repair-item-slot", "item-ops", true, List.of(), List.of(), "Fixes a corrupted or duplicated slot of a stored item.", ItemOpsHandlers::repairItemSlot),
+		new Route("POST", "/admin/repair-item-count", "item-ops", true, List.of(), List.of(), "Fixes an item count that exceeds its max stack count.", ItemOpsHandlers::repairItemCount),
+		new Route("POST", "/admin/validate-item-storage", "item-ops", false, List.of(), List.of(), "Validates whether an item may live in the requested storage.", ItemOpsHandlers::validateItemStorage),
 
 		new Route("POST", "/admin/reload-cache", "server", true, List.of("announcements", "html", "item-restrictions"), List.of(), "Reloads a cached data source from disk/database.", null),
 		new Route("POST", "/admin/broadcast-message", "server", true, List.of(), List.of("all", "elyos", "asmodians"), "Broadcasts a message to online players.", PlayerActionHandlers::broadcastMessage),
