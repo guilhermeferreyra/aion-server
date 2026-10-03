@@ -14,14 +14,16 @@ import org.slf4j.LoggerFactory;
 import com.aionemu.gameserver.configs.main.AdminApiConfig;
 import com.aionemu.gameserver.custom.adminapi.handlers.PlayerActionHandlers;
 import com.aionemu.gameserver.custom.adminapi.handlers.PlayerInsightHandlers;
+import com.aionemu.gameserver.custom.adminapi.handlers.StorageRefreshHandlers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
 /**
  * HTTP admin API consumed by the web portal. Serves {@code /admin/*} on a JDK built-in
  * {@link HttpServer}; every request must carry the shared secret in the
- * {@code x-admin-token} header. Read endpoints plus live player actions and broadcasts are
- * implemented; the remaining routes stay registered and answer 501 until their phase lands.
+ * {@code x-admin-token} header. Read endpoints, live player actions, broadcasts and storage
+ * refresh are implemented; the remaining routes stay registered and answer 501 until their
+ * phase lands.
  */
 public final class AdminApiServer {
 
@@ -84,10 +86,10 @@ public final class AdminApiServer {
 		new Route("POST", "/admin/move-to-instance-exit", "player-actions", true, List.of(), List.of(), "Moves an online player to the exit of its current instance.", PlayerActionHandlers::moveToInstanceExit),
 		new Route("POST", "/admin/unstuck-player", "player-actions", true, List.of(), List.of(), "Frees a player stuck in the void or on geometry.", PlayerActionHandlers::unstuckPlayer),
 
-		new Route("POST", "/admin/refresh-mailbox", "storage-refresh", true, List.of(), List.of(), "Re-syncs the recipient's mailbox counter and client UI.", null),
-		new Route("POST", "/admin/refresh-inventory", "storage-refresh", true, List.of(), List.of(), "Re-syncs the recipient's inventory with the database.", null),
-		new Route("POST", "/admin/refresh-warehouse", "storage-refresh", true, List.of(), List.of(), "Re-syncs the recipient's character warehouse with the database.", null),
-		new Route("POST", "/admin/refresh-account-warehouse", "storage-refresh", true, List.of(), List.of(), "Re-syncs the account warehouse for every online character of an account.", null),
+		new Route("POST", "/admin/refresh-mailbox", "storage-refresh", true, List.of(), List.of(), "Re-syncs the recipient's mailbox counter and client UI.", StorageRefreshHandlers::refreshMailbox),
+		new Route("POST", "/admin/refresh-inventory", "storage-refresh", true, List.of(), List.of(), "Re-syncs the recipient's inventory with the database.", StorageRefreshHandlers::refreshInventory),
+		new Route("POST", "/admin/refresh-warehouse", "storage-refresh", true, List.of(), List.of(), "Re-syncs the recipient's character warehouse with the database.", StorageRefreshHandlers::refreshWarehouse),
+		new Route("POST", "/admin/refresh-account-warehouse", "storage-refresh", true, List.of(), List.of(), "Re-syncs the account warehouse for every online character of an account.", StorageRefreshHandlers::refreshAccountWarehouse),
 
 		new Route("POST", "/admin/validate-express-mail", "express-mail", false, List.of(), List.of(), "Dry-run validation of an express mail (item or kinah).", null),
 		new Route("POST", "/admin/express-mail", "express-mail", true, List.of(), List.of(), "Delivers an express mail with item and/or kinah attachment.", null),

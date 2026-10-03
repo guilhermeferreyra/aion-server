@@ -449,7 +449,7 @@ public final class PlayerEnterWorldService {
 		}
 	}
 
-	private static void sendItemInfos(AionConnection client, Player player) {
+	public static void sendItemInfos(AionConnection client, Player player) {
 		player.setCubeLimit();
 		player.setWarehouseLimit();
 		// items
@@ -467,7 +467,7 @@ public final class PlayerEnterWorldService {
 		client.sendPacket(new SM_INVENTORY_INFO(false, Collections.emptyList(), player));
 	}
 
-	private static void sendWarehouseItemInfos(AionConnection client, Player player) {
+	public static void sendWarehouseItemInfos(AionConnection client, Player player) {
 		WarehouseService.sendWarehouseInfo(player, true);
 		// from 30 to 49, from 60 to 79
 		for (int i = StorageType.PET_BAG_MIN - 2; i <= StorageType.HOUSE_WH_MAX; i++) {

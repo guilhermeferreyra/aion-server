@@ -479,6 +479,20 @@ public class Equipment implements Persistable {
 	}
 
 	/**
+	 * Removes all equipped items from memory without touching the database. Used by the admin
+	 * storage refresh endpoints: item stats are dropped first so they can be re-applied by
+	 * {@link #onLoadApplyEquipmentStats()} once the items are loaded back from the DB.
+	 */
+	public void clearForReload() {
+		synchronized (this) {
+			for (Item item : getEquippedItems())
+				ItemEquipmentListener.onItemUnequipment(item, owner);
+			equipment.clear();
+		}
+		setPersistentState(PersistentState.UPDATED);
+	}
+
+	/**
 	 * Should be called only when equipment object totally constructed on player loading. Applies every equipped item stats modificators
 	 */
 	public void onLoadApplyEquipmentStats() {

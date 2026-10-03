@@ -157,9 +157,10 @@ public final class PlayerActionHandlers {
 
 	/**
 	 * Looks up the recipient; 404 when the character does not exist at all, 409 when it exists
-	 * but is not logged in (actions are live-only in P2).
+	 * but is not logged in (actions are live-only). Package-visible so the storage refresh
+	 * handlers can share the same contract.
 	 */
-	private static Player onlinePlayer(JSONObject body) throws IOException {
+	static Player onlinePlayer(JSONObject body) throws IOException {
 		Integer characterId = AdminJson.optInt(body, "recipientCharacterId");
 		if (characterId == null)
 			throw AdminApiServer.HttpResponses.badRequest("recipientCharacterId is required.");
