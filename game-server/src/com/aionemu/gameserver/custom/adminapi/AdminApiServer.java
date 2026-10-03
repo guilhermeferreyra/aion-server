@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.aionemu.gameserver.configs.main.AdminApiConfig;
+import com.aionemu.gameserver.custom.adminapi.handlers.ExpressMailHandlers;
 import com.aionemu.gameserver.custom.adminapi.handlers.PlayerActionHandlers;
 import com.aionemu.gameserver.custom.adminapi.handlers.PlayerInsightHandlers;
 import com.aionemu.gameserver.custom.adminapi.handlers.StorageRefreshHandlers;
@@ -21,9 +22,9 @@ import com.sun.net.httpserver.HttpServer;
 /**
  * HTTP admin API consumed by the web portal. Serves {@code /admin/*} on a JDK built-in
  * {@link HttpServer}; every request must carry the shared secret in the
- * {@code x-admin-token} header. Read endpoints, live player actions, broadcasts and storage
- * refresh are implemented; the remaining routes stay registered and answer 501 until their
- * phase lands.
+ * {@code x-admin-token} header. Read endpoints, live player actions, broadcasts, storage
+ * refresh and express mail are implemented; the remaining routes stay registered and answer
+ * 501 until their phase lands.
  */
 public final class AdminApiServer {
 
@@ -91,10 +92,10 @@ public final class AdminApiServer {
 		new Route("POST", "/admin/refresh-warehouse", "storage-refresh", true, List.of(), List.of(), "Re-syncs the recipient's character warehouse with the database.", StorageRefreshHandlers::refreshWarehouse),
 		new Route("POST", "/admin/refresh-account-warehouse", "storage-refresh", true, List.of(), List.of(), "Re-syncs the account warehouse for every online character of an account.", StorageRefreshHandlers::refreshAccountWarehouse),
 
-		new Route("POST", "/admin/validate-express-mail", "express-mail", false, List.of(), List.of(), "Dry-run validation of an express mail (item or kinah).", null),
-		new Route("POST", "/admin/express-mail", "express-mail", true, List.of(), List.of(), "Delivers an express mail with item and/or kinah attachment.", null),
-		new Route("POST", "/admin/validate-express-mail-batch", "express-mail", false, List.of(), List.of(), "Dry-run validation of multiple express mails.", null),
-		new Route("POST", "/admin/express-mail-batch", "express-mail", true, List.of(), List.of(), "Delivers multiple express mails (one letter per entry).", null),
+		new Route("POST", "/admin/validate-express-mail", "express-mail", false, List.of(), List.of(), "Dry-run validation of an express mail (item or kinah).", ExpressMailHandlers::validateExpressMail),
+		new Route("POST", "/admin/express-mail", "express-mail", true, List.of(), List.of(), "Delivers an express mail with item and/or kinah attachment.", ExpressMailHandlers::sendExpressMail),
+		new Route("POST", "/admin/validate-express-mail-batch", "express-mail", false, List.of(), List.of(), "Dry-run validation of multiple express mails.", ExpressMailHandlers::validateExpressMailBatch),
+		new Route("POST", "/admin/express-mail-batch", "express-mail", true, List.of(), List.of(), "Delivers multiple express mails (one letter per entry).", ExpressMailHandlers::sendExpressMailBatch),
 
 		new Route("POST", "/admin/validate-player-item-action", "item-ops", false, List.of(), List.of(), "Dry-run validation of a discard/slot/count repair on a stored item.", null),
 		new Route("POST", "/admin/discard-player-item", "item-ops", true, List.of(), List.of(), "Removes a stored item from the player's storage.", null),
