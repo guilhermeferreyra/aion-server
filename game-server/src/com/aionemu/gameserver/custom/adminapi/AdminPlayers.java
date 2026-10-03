@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.aionemu.commons.configs.DatabaseConfig;
+import com.aionemu.commons.database.DB;
+import com.aionemu.commons.database.ParamReadStH;
 import com.aionemu.gameserver.dao.InventoryDAO;
 import com.aionemu.gameserver.model.account.Account;
 import com.aionemu.gameserver.model.gameobjects.Item;
@@ -243,6 +245,28 @@ public final class AdminPlayers {
 		} catch (Exception e) {
 			return new AccountMeta("", 0);
 		}
+	}
+
+	// ------------------------------------------------------------------ existence
+
+	/**
+	 * Cheap existence check used to distinguish "character not found" (404) from "not online"
+	 * (409) in the action endpoints.
+	 */
+	public static boolean characterExists(int characterId) {
+		final boolean[] exists = new boolean[1];
+		return DB.select("SELECT 1 FROM players WHERE id = ?", new ParamReadStH() {
+
+			@Override
+			public void setParams(PreparedStatement stmt) throws java.sql.SQLException {
+				stmt.setInt(1, characterId);
+			}
+
+			@Override
+			public void handleRead(ResultSet rset) throws java.sql.SQLException {
+				exists[0] = rset.next();
+			}
+		}) && exists[0];
 	}
 
 	// ------------------------------------------------------------------ helpers

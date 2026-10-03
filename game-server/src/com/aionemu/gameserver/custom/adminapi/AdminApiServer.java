@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.aionemu.gameserver.configs.main.AdminApiConfig;
+import com.aionemu.gameserver.custom.adminapi.handlers.PlayerActionHandlers;
 import com.aionemu.gameserver.custom.adminapi.handlers.PlayerInsightHandlers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
@@ -19,7 +20,8 @@ import com.sun.net.httpserver.HttpServer;
 /**
  * HTTP admin API consumed by the web portal. Serves {@code /admin/*} on a JDK built-in
  * {@link HttpServer}; every request must carry the shared secret in the
- * {@code x-admin-token} header. Read-only in phase 1, full API over the coming phases.
+ * {@code x-admin-token} header. Read endpoints plus live player actions and broadcasts are
+ * implemented; the remaining routes stay registered and answer 501 until their phase lands.
  */
 public final class AdminApiServer {
 
@@ -44,7 +46,7 @@ public final class AdminApiServer {
 			return;
 		}
 		server.createContext("/admin", AdminApiServer::dispatch);
-		server.setExecutor(Executors.newFixedThreadPool(2));
+		server.setExecutor(Executors.newFixedThreadPool(4));
 		server.start();
 		log.info("Admin API listening on http://{}:{}/admin", AdminApiConfig.BIND, AdminApiConfig.PORT);
 	}
@@ -76,11 +78,11 @@ public final class AdminApiServer {
 		new Route("GET", "/admin/player-state", "read", false, List.of(), List.of(), "Live state of one character, with last known position when offline.", PlayerInsightHandlers::playerState),
 		new Route("GET", "/admin/player-storage-state", "read", false, List.of(), List.of(), "Full storage snapshot (inventory, warehouses, mailbox) of one character.", PlayerInsightHandlers::playerStorageState),
 
-		new Route("POST", "/admin/notify-player", "player-actions", true, List.of(), List.of(), "Sends an admin message to an online player.", null),
-		new Route("POST", "/admin/kick-player", "player-actions", true, List.of(), List.of(), "Disconnects an online player.", null),
-		new Route("POST", "/admin/move-to-bind-point", "player-actions", true, List.of(), List.of(), "Teleports an online player to its bind point.", null),
-		new Route("POST", "/admin/move-to-instance-exit", "player-actions", true, List.of(), List.of(), "Moves an online player to the exit of its current instance.", null),
-		new Route("POST", "/admin/unstuck-player", "player-actions", true, List.of(), List.of(), "Frees a player stuck in the void or on geometry.", null),
+		new Route("POST", "/admin/notify-player", "player-actions", true, List.of(), List.of(), "Sends an admin message to an online player.", PlayerActionHandlers::notifyPlayer),
+		new Route("POST", "/admin/kick-player", "player-actions", true, List.of(), List.of(), "Disconnects an online player.", PlayerActionHandlers::kickPlayer),
+		new Route("POST", "/admin/move-to-bind-point", "player-actions", true, List.of(), List.of(), "Teleports an online player to its bind point.", PlayerActionHandlers::moveToBindPoint),
+		new Route("POST", "/admin/move-to-instance-exit", "player-actions", true, List.of(), List.of(), "Moves an online player to the exit of its current instance.", PlayerActionHandlers::moveToInstanceExit),
+		new Route("POST", "/admin/unstuck-player", "player-actions", true, List.of(), List.of(), "Frees a player stuck in the void or on geometry.", PlayerActionHandlers::unstuckPlayer),
 
 		new Route("POST", "/admin/refresh-mailbox", "storage-refresh", true, List.of(), List.of(), "Re-syncs the recipient's mailbox counter and client UI.", null),
 		new Route("POST", "/admin/refresh-inventory", "storage-refresh", true, List.of(), List.of(), "Re-syncs the recipient's inventory with the database.", null),
@@ -99,7 +101,7 @@ public final class AdminApiServer {
 		new Route("POST", "/admin/validate-item-storage", "item-ops", false, List.of(), List.of(), "Validates whether an item may live in the requested storage.", null),
 
 		new Route("POST", "/admin/reload-cache", "server", true, List.of("announcements", "html", "item-restrictions"), List.of(), "Reloads a cached data source from disk/database.", null),
-		new Route("POST", "/admin/broadcast-message", "server", true, List.of(), List.of("all", "elyos", "asmodians"), "Broadcasts a message to online players.", null),
+		new Route("POST", "/admin/broadcast-message", "server", true, List.of(), List.of("all", "elyos", "asmodians"), "Broadcasts a message to online players.", PlayerActionHandlers::broadcastMessage),
 		new Route("POST", "/admin/maintenance-warning", "server", true, List.of(), List.of("all", "elyos", "asmodians"), "Schedules maintenance warning broadcasts before shutdown.", null));
 
 	private static void dispatch(HttpExchange ex) {
@@ -226,6 +228,10 @@ public final class AdminApiServer {
 
 		public static HttpResponses forbidden(String msg) {
 			return new HttpResponses(403, AdminJson.fail(msg));
+		}
+
+		public static HttpResponses conflict(String msg) {
+			return new HttpResponses(409, AdminJson.fail(msg));
 		}
 
 		public static HttpResponses serviceUnavailable(String msg) {
