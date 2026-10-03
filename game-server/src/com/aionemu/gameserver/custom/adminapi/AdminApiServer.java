@@ -16,6 +16,7 @@ import com.aionemu.gameserver.custom.adminapi.handlers.ExpressMailHandlers;
 import com.aionemu.gameserver.custom.adminapi.handlers.ItemOpsHandlers;
 import com.aionemu.gameserver.custom.adminapi.handlers.PlayerActionHandlers;
 import com.aionemu.gameserver.custom.adminapi.handlers.PlayerInsightHandlers;
+import com.aionemu.gameserver.custom.adminapi.handlers.ServerOpsHandlers;
 import com.aionemu.gameserver.custom.adminapi.handlers.StorageRefreshHandlers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
@@ -104,9 +105,9 @@ public final class AdminApiServer {
 		new Route("POST", "/admin/repair-item-count", "item-ops", true, List.of(), List.of(), "Fixes an item count that exceeds its max stack count.", ItemOpsHandlers::repairItemCount),
 		new Route("POST", "/admin/validate-item-storage", "item-ops", false, List.of(), List.of(), "Validates whether an item may live in the requested storage.", ItemOpsHandlers::validateItemStorage),
 
-		new Route("POST", "/admin/reload-cache", "server", true, List.of("announcements", "html", "item-restrictions"), List.of(), "Reloads a cached data source from disk/database.", null),
+		new Route("POST", "/admin/reload-cache", "server", true, List.of("announcements", "html", "item-restrictions"), List.of(), "Reloads a cached data source from disk/database.", ServerOpsHandlers::reloadCache),
 		new Route("POST", "/admin/broadcast-message", "server", true, List.of(), List.of("all", "elyos", "asmodians"), "Broadcasts a message to online players.", PlayerActionHandlers::broadcastMessage),
-		new Route("POST", "/admin/maintenance-warning", "server", true, List.of(), List.of("all", "elyos", "asmodians"), "Schedules maintenance warning broadcasts before shutdown.", null));
+		new Route("POST", "/admin/maintenance-warning", "server", true, List.of(), List.of("all", "elyos", "asmodians"), "Schedules maintenance warning broadcasts before shutdown.", ServerOpsHandlers::maintenanceWarning));
 
 	private static void dispatch(HttpExchange ex) {
 		try {

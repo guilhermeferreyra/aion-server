@@ -50,6 +50,10 @@ public class AdminService {
 		LoggerFactory.getLogger(AdminService.class).info("AdminService loaded " + list.size() + " operational items.");
 	}
 
+	public int getRestrictedItemCount() {
+		return list.size();
+	}
+
 	public boolean canOperate(Player player, Player target, Item item, String type) {
 		return canOperate(player, target, item.getItemId(), type);
 	}
