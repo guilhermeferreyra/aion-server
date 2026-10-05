@@ -18,6 +18,7 @@ import com.aionemu.gameserver.custom.adminapi.handlers.PlayerActionHandlers;
 import com.aionemu.gameserver.custom.adminapi.handlers.PlayerInsightHandlers;
 import com.aionemu.gameserver.custom.adminapi.handlers.ServerOpsHandlers;
 import com.aionemu.gameserver.custom.adminapi.handlers.StorageRefreshHandlers;
+import com.aionemu.gameserver.custom.botapi.BotApiHandlers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
@@ -107,7 +108,13 @@ public final class AdminApiServer {
 
 		new Route("POST", "/admin/reload-cache", "server", true, List.of("announcements", "html", "item-restrictions"), List.of(), "Reloads a cached data source from disk/database.", ServerOpsHandlers::reloadCache),
 		new Route("POST", "/admin/broadcast-message", "server", true, List.of(), List.of("all", "elyos", "asmodians"), "Broadcasts a message to online players.", PlayerActionHandlers::broadcastMessage),
-		new Route("POST", "/admin/maintenance-warning", "server", true, List.of(), List.of("all", "elyos", "asmodians"), "Schedules maintenance warning broadcasts before shutdown.", ServerOpsHandlers::maintenanceWarning));
+		new Route("POST", "/admin/maintenance-warning", "server", true, List.of(), List.of("all", "elyos", "asmodians"), "Schedules maintenance warning broadcasts before shutdown.", ServerOpsHandlers::maintenanceWarning),
+
+		new Route("POST", "/admin/bots/status", "bots", false, List.of(), List.of(), "Live status of one LLM bot (online, farming run, kills, xp).", BotApiHandlers::status),
+		new Route("GET", "/admin/bots/farm-debug", "bots", false, List.of(), List.of(), "Farm loop diagnostics for one bot (nearest mobs, target, 3D distances).", BotApiHandlers::farmDebug),
+		new Route("POST", "/admin/bots/start-run", "bots", true, List.of(), List.of(), "Starts a farm run for an online bot in an instance.", BotApiHandlers::startRun),
+		new Route("POST", "/admin/bots/stop-farm", "bots", true, List.of(), List.of(), "Stops the bot's farm run and sends it home.", BotApiHandlers::stopFarm),
+		new Route("POST", "/admin/bots/chat", "bots", true, List.of(), List.of(), "Makes the bot say something on shout or whisper.", BotApiHandlers::chat));
 
 	private static void dispatch(HttpExchange ex) {
 		try {
