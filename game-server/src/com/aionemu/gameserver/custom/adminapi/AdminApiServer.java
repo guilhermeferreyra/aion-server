@@ -89,6 +89,7 @@ public final class AdminApiServer {
 		new Route("POST", "/admin/move-to-bind-point", "player-actions", true, List.of(), List.of(), "Teleports an online player to its bind point.", PlayerActionHandlers::moveToBindPoint),
 		new Route("POST", "/admin/move-to-instance-exit", "player-actions", true, List.of(), List.of(), "Moves an online player to the exit of its current instance.", PlayerActionHandlers::moveToInstanceExit),
 		new Route("POST", "/admin/unstuck-player", "player-actions", true, List.of(), List.of(), "Frees a player stuck in the void or on geometry.", PlayerActionHandlers::unstuckPlayer),
+		new Route("POST", "/admin/execute-command", "player-actions", true, List.of(), List.of(), "Executes a //admin, .player or #console chat command on an online player, as that player (access level applies).", PlayerActionHandlers::executeCommand),
 
 		new Route("POST", "/admin/refresh-mailbox", "storage-refresh", true, List.of(), List.of(), "Re-syncs the recipient's mailbox counter and client UI.", StorageRefreshHandlers::refreshMailbox),
 		new Route("POST", "/admin/refresh-inventory", "storage-refresh", true, List.of(), List.of(), "Re-syncs the recipient's inventory with the database.", StorageRefreshHandlers::refreshInventory),

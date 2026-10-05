@@ -17,6 +17,9 @@ import com.aionemu.gameserver.network.aion.serverpackets.SM_QUIT_RESPONSE;
 import com.aionemu.gameserver.services.instance.InstanceService;
 import com.aionemu.gameserver.services.teleport.TeleportService;
 import com.aionemu.gameserver.utils.PacketSendUtility;
+import com.aionemu.gameserver.utils.chathandlers.AdminCommand;
+import com.aionemu.gameserver.utils.chathandlers.ChatProcessor;
+import com.aionemu.gameserver.utils.chathandlers.PlayerCommand;
 import com.aionemu.gameserver.world.World;
 import com.sun.net.httpserver.HttpExchange;
 
@@ -154,6 +157,39 @@ public final class PlayerActionHandlers {
 	}
 
 	// ------------------------------------------------------------------ helpers
+
+	/**
+	 * Executes a game chat command for an online player, as that player (the same code path
+	 * CM_CHAT uses): {@code //cmd ...} admin commands and {@code .cmd ...} player commands go
+	 * through {@link ChatProcessor#handleChatCommand}, anything else is resolved as a console
+	 * command via {@link ChatProcessor#handleConsoleCommand}. The player's access level applies,
+	 * so GM-gated functions need a privileged account.
+	 */
+	public static void executeCommand(HttpExchange ex, Map<String, String> query, JSONObject body) throws IOException {
+		String command = requiredText(body, "command");
+		Player player = onlinePlayer(body);
+
+		var processor = ChatProcessor.getInstance();
+		boolean handled;
+		if (command.startsWith(AdminCommand.PREFIX) || command.startsWith(PlayerCommand.PREFIX)) {
+			handled = processor.handleChatCommand(player, command);
+		} else {
+			String alias = command.trim().split(" +", 2)[0];
+			if (!processor.isCommandExists(alias))
+				throw AdminApiServer.HttpResponses.badRequest("Unknown command: " + command);
+			processor.handleConsoleCommand(player, command);
+			handled = true;
+		}
+
+		Map<String, Object> fields = new LinkedHashMap<>();
+		fields.put("recipientCharacterId", player.getObjectId());
+		fields.put("recipientName", player.getName());
+		fields.put("command", command);
+		fields.put("handled", handled);
+		if (!handled)
+			fields.put("hint", "Command not recognized, or the account lacks access for it (needs access_level 9 for most GM-gated params).");
+		AdminJson.send(ex, 200, AdminJson.ok(fields));
+	}
 
 	/**
 	 * Looks up the recipient; 404 when the character does not exist at all, 409 when it exists
