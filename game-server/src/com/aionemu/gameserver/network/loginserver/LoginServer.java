@@ -158,7 +158,15 @@ public class LoginServer {
 			sendPacket(new SM_ACCOUNT_DISCONNECTED(accountId)); // disconnect manually from login server because account isn't attached to connection yet
 			return;
 		}
-		Account account = AccountService.getAccount(accountId, accountName, creationDate, accountTime, accessLevel, membership, allowedHddSerial);
+		Account account;
+		try {
+			account = AccountService.getAccount(accountId, accountName, creationDate, accountTime, accessLevel, membership, allowedHddSerial);
+		} catch (Throwable t) { // e.g. corrupt player row (getByte out of range): fail login cleanly so LS registry entry is released
+			log.error("Error loading account " + accountId + " (" + accountName + ") during L2AUTH", t);
+			client.close(new SM_L2AUTH_LOGIN_CHECK(false, accountName));
+			sendPacket(new SM_ACCOUNT_DISCONNECTED(accountId));
+			return;
+		}
 		if (SecurityConfig.HDD_SERIAL_LOCK_UNLOCKED_ACCOUNTS && account.getAllowedHddSerial().isEmpty() && !client.getHddSerial().isEmpty()) {
 			account.setAllowedHddSerial(client.getHddSerial());
 			sendPacket(new SM_CHANGE_ALLOWED_HDD_SERIAL(account));

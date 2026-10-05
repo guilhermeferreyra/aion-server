@@ -103,6 +103,7 @@ public final class PlayerEnterWorldService {
 		}
 
 		if (PlayerDAO.isOnline(objectId)) { // char is still leaving the world and not saved yet (fast reentry from plastic surgery screen or packet hack)
+			log.warn("REENTRY probe: objectId={} account={} isOnline(DB)=true (fast reentry)", objectId, account.getId());
 			client.sendPacket(new SM_ENTER_WORLD_CHECK(Msg.REENTRY_TIME));
 			return;
 		}
@@ -112,7 +113,9 @@ public final class PlayerEnterWorldService {
 			.map(p -> p.getPlayerCommonData().getPlayerObjId())
 			.orElse(null);
 		if (onlinePlayerId != null) { // a char was online during acc login (double login or client crash), so reload pcd, appearance and acc warehouse
+			log.warn("REENTRY probe: objectId={} account={} double-login detected onlinePlayerId={}", objectId, account.getId(), onlinePlayerId);
 			if (PlayerDAO.isOnline(onlinePlayerId)) { // the found char is still leaving the world, so the acc wh might still be outdated
+				log.warn("REENTRY probe: objectId={} onlinePlayerId={} isOnline(DB)=true", objectId, onlinePlayerId);
 				client.sendPacket(new SM_ENTER_WORLD_CHECK(Msg.REENTRY_TIME));
 				return;
 			}
@@ -151,6 +154,7 @@ public final class PlayerEnterWorldService {
 
 		Timestamp lastOnline = pcd.getLastOnline();
 		if (!pcd.isInEditMode() && lastOnline != null && System.currentTimeMillis() - lastOnline.getTime() < (GSConfig.CHARACTER_REENTRY_TIME * 1000)) {
+			log.warn("REENTRY probe: objectId={} lastOnline={} diffMs={} reentrySec={}", objectId, lastOnline, System.currentTimeMillis() - lastOnline.getTime(), GSConfig.CHARACTER_REENTRY_TIME);
 			client.sendPacket(new SM_ENTER_WORLD_CHECK(Msg.REENTRY_TIME));
 			return;
 		}
