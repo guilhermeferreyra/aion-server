@@ -141,7 +141,9 @@ public class CM_LOGIN extends AionClientPacket {
 		for (int offset = encryptedLoginData.length - 128; offset >= 0; offset -= 128) // shift to the left to remove prefix zero-padding
 			System.arraycopy(decrypted, offset + contentStartOffset, decrypted, offset, decrypted.length - (offset + contentStartOffset));
 		Charset charset = Charset.forName("Cp1252"); // should be sent by the client, but so far it's only been found in CM_VERSION_CHECK
-		String username = readString(decrypted, 0, usernameByteLength, charset);
+		// o cliente envia o nome num campo fixo; whitespace no inicio/fim (ex.: credencial
+		// salva errada) criava contas-fantasma via auto-creation — normaliza antes de usar
+		String username = readString(decrypted, 0, usernameByteLength, charset).trim();
 		String password = readString(decrypted, usernameByteLength, passwordByteLength, charset);
 		int otp = ByteBuffer.wrap(decrypted, usernameByteLength + passwordByteLength, 4).order(ByteOrder.LITTLE_ENDIAN).getInt();
 		return new LoginData(username, password, otp);
