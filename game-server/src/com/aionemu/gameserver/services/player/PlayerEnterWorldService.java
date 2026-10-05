@@ -517,6 +517,7 @@ class GeneralUpdateTask implements Runnable {
 				PlayerDAO.storePlayer(player);
 				for (House house : player.getHouses())
 					house.save();
+				log.info("Periodic save ok: {}", player.getName());
 			} catch (Exception ex) {
 				log.error("Exception during periodic saving of player " + player.getName(), ex);
 			}
@@ -540,6 +541,7 @@ class ItemUpdateTask implements Runnable {
 			try {
 				InventoryDAO.store(player);
 				ItemStoneListDAO.save(player);
+				log.info("Periodic items save ok: {}", player.getName());
 			} catch (Exception ex) {
 				log.error("Exception during periodic saving of player items " + player.getName(), ex);
 			}
