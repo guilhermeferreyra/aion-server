@@ -162,6 +162,21 @@ public final class BotFarmService {
 	}
 
 	/**
+	 * Called from {@code PlayerLeaveWorldService.leaveWorld} when a bot character leaves the
+	 * world (logout or client crash): ends its farm session so stale state (old startExp,
+	 * inRun=true, scheduled tick) does not survive across logins and block the next run.
+	 */
+	public static void onPlayerLogout(Player p) {
+		String botId = botIdOf(p);
+		if (botId == null)
+			return;
+		FarmSession s = SESSIONS.get(botId);
+		if (s == null || s.objectId != p.getObjectId())
+			return;
+		stopRun(botId, "logout");
+	}
+
+	/**
 	 * Stops a farm run: cancels the combat loop and teleports the bot out of the instance
 	 * (or to its bind point when already outside).
 	 */

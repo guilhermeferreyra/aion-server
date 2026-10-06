@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.aionemu.gameserver.configs.main.AutoGroupConfig;
+import com.aionemu.gameserver.custom.botapi.BotFarmService;
 import com.aionemu.gameserver.dao.*;
 import com.aionemu.gameserver.dataholders.DataManager;
 import com.aionemu.gameserver.dataholders.PlayerInitialData.LocationData;
@@ -89,6 +90,7 @@ public class PlayerLeaveWorldService {
 		ConquerorAndProtectorService.getInstance().onLeaveMap(player);
 		MultiClientingService.onLeaveWorld(player);
 		InstanceService.onLogout(player);
+		BotFarmService.onPlayerLogout(player); // ends any farm session so stale state doesn't survive the login gap
 		GMService.getInstance().onPlayerLogout(player);
 		KiskService.getInstance().onLogout(player);
 
