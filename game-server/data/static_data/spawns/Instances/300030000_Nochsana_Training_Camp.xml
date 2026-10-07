@@ -2,7 +2,7 @@
 <spawns xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../spawns.xsd">
 	<spawn_map map_id="300030000">
 		<!-- Aetheric Field Guard -->
-		<spawn npc_id="256692">
+		<spawn npc_id="256692" respawn_time="30">
 			<spot x="381.684" y="409.118" z="376.827" h="55"/>
 		</spawn>
 		<!-- Nochsana Abyss Gate -->
@@ -14,18 +14,18 @@
 			<spot x="312.762" y="596.152" z="376.061" static_id="32"/>
 		</spawn>
 		<!-- Nochsana Doc -->
-		<spawn npc_id="256687">
+		<spawn npc_id="256687" respawn_time="30">
 			<spot x="316.422" y="604.899" z="372.452" h="21"/>
 			<spot x="325.006" y="427.185" z="376.827" h="113"/>
 			<spot x="372.909" y="409.255" z="377.141" h="55"/>
 		</spawn>
 		<!-- Nochsana Doc -->
-		<spawn npc_id="256688">
+		<spawn npc_id="256688" respawn_time="30">
 			<spot x="334.716" y="278.008" z="384.553" h="25"/>
 			<spot x="378.425" y="276.711" z="397.781" h="43"/>
 		</spawn>
 		<!-- Nochsana Drake -->
-		<spawn npc_id="256678">
+		<spawn npc_id="256678" respawn_time="30">
 			<spot x="417.309" y="560.172" z="335.217" h="55"/>
 			<spot x="420.709" y="565.528" z="334.77" h="48"/>
 			<spot x="429.343" y="545.214" z="341.019" h="80"/>
@@ -34,7 +34,7 @@
 			<spot x="440.452" y="565.18" z="334.2" h="6"/>
 		</spawn>
 		<!-- Nochsana Drake -->
-		<spawn npc_id="256677">
+		<spawn npc_id="256677" respawn_time="30">
 			<spot x="312.966" y="370.566" z="378.771" h="100"/>
 			<spot x="317.369" y="372.219" z="378.419" h="100"/>
 			<spot x="320.644" y="377.096" z="378.288"/>
@@ -47,15 +47,15 @@
 			<spot x="346.379974" y="356.947449" z="378.26767" static_id="23"/>
 		</spawn>
 		<!-- Nochsana General -->
-		<spawn npc_id="256693">
+		<spawn npc_id="256693" respawn_time="30">
 			<spot x="331.097" y="269.36" z="384.553" h="25"/>
 		</spawn>
 		<!-- Nochsana Guard -->
-		<spawn npc_id="256689">
+		<spawn npc_id="256689" respawn_time="30">
 			<spot x="357.389" y="438.693" z="361.74" h="25"/>
 		</spawn>
 		<!-- Nochsana Picket -->
-		<spawn npc_id="256683">
+		<spawn npc_id="256683" respawn_time="30">
 			<spot x="302.537" y="605.062" z="371.0" h="106"/>
 			<spot x="326.112" y="595.188" z="370.861" h="58"/>
 			<spot x="326.641" y="404.307" z="366.2" h="115"/>
@@ -64,7 +64,7 @@
 			<spot x="430.791" y="592.78" z="334.901" h="100"/>
 		</spawn>
 		<!-- Nochsana Picket -->
-		<spawn npc_id="256684">
+		<spawn npc_id="256684" respawn_time="30">
 			<spot x="307.809" y="279.916" z="392.635" h="13"/>
 			<spot x="322.4" y="309.32" z="380.09628" h="71"/>
 			<spot x="340.76" y="324.66" z="380.07465" h="27"/>
@@ -72,11 +72,11 @@
 			<spot x="375.307" y="273.593" z="397.441" h="43"/>
 		</spawn>
 		<!-- Nochsana Protector -->
-		<spawn npc_id="256690">
+		<spawn npc_id="256690" respawn_time="30">
 			<spot x="306.93" y="590.44" z="373.03226" h="113"/>
 		</spawn>
 		<!-- Nochsana Recondo -->
-		<spawn npc_id="256682">
+		<spawn npc_id="256682" respawn_time="30">
 			<spot x="286.622" y="304.871" z="398.335" h="116"/>
 			<spot x="287.444" y="310.481" z="398.338" h="116"/>
 			<spot x="298.8" y="344.77" z="379.725" h="15" walker_id="137AA3A4FFF2593D5D5C7706F69EDCA828FFC80A"/>
@@ -99,7 +99,7 @@
 			<spot x="385.857" y="301.539" z="398.189" h="55"/>
 		</spawn>
 		<!-- Nochsana Recondo -->
-		<spawn npc_id="256681">
+		<spawn npc_id="256681" respawn_time="30">
 			<spot x="299.160" y="596.752" z="371.445"/>
 			<spot x="339.062" y="620.305" z="366.580" h="116"/>
 			<spot x="340.663" y="626.705" z="367.260" h="110"/>
@@ -117,7 +117,7 @@
 			<spot x="497.343" y="590.840" z="330.670" h="16"/>
 		</spawn>
 		<!-- Nochsana Recruit -->
-		<spawn npc_id="256679">
+		<spawn npc_id="256679" respawn_time="30">
 			<spot x="362.511" y="592.975" z="342.055" h="55"/>
 			<spot x="370.831" y="648.249" z="370.286" h="77"/>
 			<spot x="371.99" y="622.57" z="358.055" h="15"/>
@@ -135,7 +135,7 @@
 			<spot x="513.453" y="579.245" z="332.375"/>
 		</spawn>
 		<!-- Nochsana Recruit -->
-		<spawn npc_id="256680">
+		<spawn npc_id="256680" respawn_time="30">
 			<spot x="385.242" y="349.599" z="378.155" h="1"/>
 			<spot x="428.18" y="495.503" z="360.628" h="81"/>
 			<spot x="434.364" y="707.457" z="364.085" h="34"/>
@@ -143,7 +143,7 @@
 			<spot x="475.549" y="605.715" z="329.967"/>
 		</spawn>
 		<!-- Nochsana Runner -->
-		<spawn npc_id="256686">
+		<spawn npc_id="256686" respawn_time="30">
 			<spot x="293.88" y="283.9" z="397.16788" h="45"/>
 			<spot x="303.117" y="315.776" z="384.45" h="106"/>
 			<spot x="316.421" y="344.583" z="393.11" h="40"/>
@@ -156,7 +156,7 @@
 			<spot x="349.18" y="381.44" z="372.96375" h="43"/>
 		</spawn>
 		<!-- Nochsana Runner -->
-		<spawn npc_id="256685">
+		<spawn npc_id="256685" respawn_time="30">
 			<spot x="297.48" y="575.68" z="368.34" h="56"/>
 			<spot x="322.320" y="586.706" z="370.182" h="46"/>
 			<spot x="352.03" y="607.26" z="359.3325" h="112" walker_id="E7FFA36B25F557C18343D027820608AEA4B111D1"/>
