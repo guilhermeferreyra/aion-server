@@ -12,7 +12,8 @@
 			</buff>
 			<!-- 18141 - Warrior's Courage I: Max HP +1500 -->
 			<!-- 21258 - Attack Boost: Phy./Mag. Atk. +15%, Mag. Boost +100 -->
-			<buff skill_ids="18141 21258" permanent="true" team="true">
+			<!-- 55000 - Server Defense Blessing (custom): Phy./Mag. Def. +25% -->
+			<buff skill_ids="18141 21258 55000" permanent="true" team="true">
 				<trigger condition="ENTER_MAP" />
 				<trigger condition="ENTER_TEAM" />
 				<restriction maps="GROUP_INSTANCE ALLIANCE_INSTANCE" team_size_max_percent="70" />

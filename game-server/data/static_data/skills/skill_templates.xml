@@ -204627,4 +204627,20 @@
 			<move_casting allow="false" />
 		</useconditions>
 	</skill_template>
+	<!-- Private-server permanent defense blessing, applied by the "Beyond Aion Server Buffs"
+	     event. Own stack (SERVER_DEF_BLESSING) so it never conflicts with other buffs.
+	     Note: XSD caps skillId at 60000, so custom skills must stay below that. -->
+	<skill_template skill_id="55000" name="Server Defense Blessing" nameId="2285896" cooldownId="6" stack="SERVER_DEF_BLESSING" lvl="1" skilltype="MAGICAL" skillsubtype="BUFF" tslot="BUFF" dispel_category="BUFF" req_dispel_level="5" req_dispel_count="50" activation="ACTIVE" cooldown="0" duration="1000" hostile_type="INDIRECT" apply_magical_skill_boost_bonus="true" apply_magical_critical="true">
+		<properties first_target="TARGET" first_target_range="50" target_relation="FRIEND" target_type="ONLYONE" target_maxcount="1" />
+		<useconditions>
+			<move_casting allow="false" />
+		</useconditions>
+		<effects>
+			<statup duration2="86400000" effectid="55000" e="1">
+				<change stat="PHYSICAL_DEFENSE" func="PERCENT" value="25" />
+				<change stat="MAGICAL_DEFEND" func="PERCENT" value="25" />
+			</statup>
+		</effects>
+		<motion name="normalfire" />
+	</skill_template>
 </skill_data>
