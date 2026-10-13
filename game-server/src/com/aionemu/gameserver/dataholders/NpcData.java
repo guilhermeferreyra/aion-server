@@ -7,6 +7,7 @@ import javax.xml.bind.annotation.*;
 
 import org.slf4j.LoggerFactory;
 
+import com.aionemu.gameserver.configs.main.NpcStatsConfig;
 import com.aionemu.gameserver.dataholders.loadingutils.StaticDataListener;
 import com.aionemu.gameserver.model.DialogAction;
 import com.aionemu.gameserver.model.TribeClass;
@@ -43,6 +44,9 @@ public class NpcData {
 	}
 
 	private void init() {
+		boolean scalingEnabled = NpcStatsConfig.HP_MULTIPLIER != 1f || NpcStatsConfig.ATTACK_MULTIPLIER != 1f || NpcStatsConfig.DEFENSE_MULTIPLIER != 1f;
+		int scaledNpcs = 0;
+		int scaledSamples = 0;
 		for (NpcTemplate npc : npcs) {
 			npcData.put(npc.getTemplateId(), npc);
 			if (npc.getFuncDialogIds() != null) {
@@ -85,11 +89,41 @@ public class NpcData {
 					template.setStrikeResist(strikeResist);
 				}
 				template.setStunLikeResistance(NpcStatCalculation.calculateStat(StatEnum.STUNLIKE_RESISTANCE, rating, rank, level));
+
+				// Private-server difficulty tuning (NpcStatsConfig): scale combat stats of every
+				// non-pet NPC uniformly. Runs once at load, after the zero-fill above, so all
+				// consumers (spawns, boss handlers, fortress garrisons) see the tuned values.
+				if (scalingEnabled) {
+					int beforeHp = template.getMaxHp();
+					int beforeAtk = template.getAttack();
+					applyScaling(template);
+					scaledNpcs++;
+					if (scaledSamples < 3) {
+						scaledSamples++;
+						LoggerFactory.getLogger(NpcData.class).info("NpcStats scaling sample [npc {}]: hp {} -> {}, attack {} -> {}", npc.getTemplateId(), beforeHp, template.getMaxHp(),
+							beforeAtk, template.getAttack());
+					}
+				}
 			}
 			if (npc.getFuncDialogIds() != null)
 				functionDialogIds.addAll(npc.getFuncDialogIds());
 		}
+		if (scalingEnabled)
+			LoggerFactory.getLogger(NpcData.class).info("NpcStatsConfig: scaled {} non-pet NPC templates (hp x{}, attack x{}, defense x{})", scaledNpcs, NpcStatsConfig.HP_MULTIPLIER,
+				NpcStatsConfig.ATTACK_MULTIPLIER, NpcStatsConfig.DEFENSE_MULTIPLIER);
 		npcs = null;
+	}
+
+	private static void applyScaling(StatsTemplate t) {
+		t.setMaxHp(scale(t.getMaxHp(), NpcStatsConfig.HP_MULTIPLIER));
+		t.setAttack(scale(t.getAttack(), NpcStatsConfig.ATTACK_MULTIPLIER));
+		t.setMagicalAttack(scale(t.getMagicalAttack(), NpcStatsConfig.ATTACK_MULTIPLIER));
+		t.setPdef(scale(t.getPdef(), NpcStatsConfig.DEFENSE_MULTIPLIER));
+		t.setMdef(scale(t.getMdef(), NpcStatsConfig.DEFENSE_MULTIPLIER));
+	}
+
+	private static int scale(int value, float multiplier) {
+		return Math.round(value * multiplier);
 	}
 
 	public int size() {
