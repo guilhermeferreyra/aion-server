@@ -7,9 +7,11 @@ import com.aionemu.gameserver.custom.adminapi.AdminApiServer;
 import com.aionemu.gameserver.custom.adminapi.AdminJson;
 import com.aionemu.gameserver.model.ChatType;
 import com.aionemu.gameserver.model.gameobjects.player.Player;
+import com.aionemu.gameserver.model.team.group.PlayerGroupService;
 import com.aionemu.gameserver.network.aion.serverpackets.SM_MESSAGE;
 import com.aionemu.gameserver.services.NameRestrictionService;
 import com.aionemu.gameserver.services.player.PlayerChatService;
+import com.aionemu.gameserver.utils.ChatUtil;
 import com.aionemu.gameserver.utils.PacketSendUtility;
 import com.aionemu.gameserver.world.World;
 import com.alibaba.fastjson2.JSONObject;
@@ -75,6 +77,29 @@ public final class BotApiHandlers {
 		AdminJson.send(ex, 200, AdminJson.ok(Map.of(
 			"stopped", true,
 			"wasFarming", wasRunning)));
+	}
+
+	/**
+	 * POST /admin/bots/invite-to-group - makes one online player send a group invitation to another
+	 * online player (same flow as a player's party UI). Body: {@code inviterCharacterId} (any online
+	 * character) + {@code targetName}. Headless bots auto-accept; real clients see the usual dialog.
+	 */
+	public static void inviteToGroup(HttpExchange ex, Map<String, String> query, JSONObject body) throws IOException {
+		int inviterId = body.getIntValue("inviterCharacterId", 0);
+		String targetName = body.getString("targetName");
+		if (inviterId <= 0 || targetName == null || targetName.isEmpty())
+			throw AdminApiServer.HttpResponses.badRequest("inviterCharacterId and targetName are required.");
+		Player inviter = World.getInstance().getPlayer(inviterId);
+		if (inviter == null)
+			throw AdminApiServer.HttpResponses.conflict("Inviter is not online (characterId=" + inviterId + ").");
+		Player target = World.getInstance().getPlayer(ChatUtil.getRealCharName(targetName));
+		if (target == null)
+			throw AdminApiServer.HttpResponses.conflict("Target is not online (name=\"" + targetName + "\").");
+		PlayerGroupService.inviteToGroup(inviter, target);
+		AdminJson.send(ex, 200, AdminJson.ok(Map.of(
+			"invited", true,
+			"inviter", inviter.getName(false),
+			"target", target.getName(false))));
 	}
 
 	// ---------------------------------------------------------------- status

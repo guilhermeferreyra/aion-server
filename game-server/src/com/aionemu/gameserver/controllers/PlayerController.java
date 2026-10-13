@@ -11,6 +11,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.alibaba.fastjson2.JSONObject;
 import com.aionemu.gameserver.GameServer;
 import com.aionemu.gameserver.ai.NpcAI;
 import com.aionemu.gameserver.ai.handler.ShoutEventHandler;
@@ -19,6 +20,8 @@ import com.aionemu.gameserver.configs.main.*;
 import com.aionemu.gameserver.controllers.attack.AttackStatus;
 import com.aionemu.gameserver.controllers.attack.AttackUtil;
 import com.aionemu.gameserver.controllers.observer.StanceObserver;
+import com.aionemu.gameserver.custom.botapi.BotFarmService;
+import com.aionemu.gameserver.custom.botapi.BotWebhooks;
 import com.aionemu.gameserver.custom.pvpmap.PvpMapService;
 import com.aionemu.gameserver.dataholders.DataManager;
 import com.aionemu.gameserver.model.EmotionType;
@@ -589,6 +592,9 @@ public class PlayerController extends CreatureController<Player> {
 		player.getCommonData().resetSalvationPoints();
 		upgradePlayer();
 		PacketSendUtility.broadcastPacket(player, new SM_ACTION_ANIMATION(player.getObjectId(), ActionAnimation.LEVEL_UP, newLevel), true);
+
+		if (newLevel > oldLevel && BotFarmService.isBotAccount(player.getAccount().getName()))
+			BotWebhooks.post(BotFarmService.botIdOf(player), "level-up", new JSONObject().fluentPut("level", newLevel));
 
 		player.getNpcFactions().onLevelUp();
 		QuestEngine.getInstance().onLevelChanged(player);

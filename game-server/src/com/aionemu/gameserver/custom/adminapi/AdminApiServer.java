@@ -115,7 +115,8 @@ public final class AdminApiServer {
 		new Route("GET", "/admin/bots/farm-debug", "bots", false, List.of(), List.of(), "Farm loop diagnostics for one bot (nearest mobs, target, 3D distances).", BotApiHandlers::farmDebug),
 		new Route("POST", "/admin/bots/start-run", "bots", true, List.of(), List.of(), "Starts a farm run for an online bot in an instance.", BotApiHandlers::startRun),
 		new Route("POST", "/admin/bots/stop-farm", "bots", true, List.of(), List.of(), "Stops the bot's farm run and sends it home.", BotApiHandlers::stopFarm),
-		new Route("POST", "/admin/bots/chat", "bots", true, List.of(), List.of(), "Makes the bot say something on shout or whisper.", BotApiHandlers::chat));
+		new Route("POST", "/admin/bots/chat", "bots", true, List.of(), List.of(), "Makes the bot say something on shout or whisper.", BotApiHandlers::chat),
+		new Route("POST", "/admin/bots/invite-to-group", "bots", true, List.of(), List.of(), "Sends a group invitation from one online player to another online player.", BotApiHandlers::inviteToGroup));
 
 	private static void dispatch(HttpExchange ex) {
 		try {

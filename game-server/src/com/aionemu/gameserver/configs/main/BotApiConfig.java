@@ -55,4 +55,37 @@ public class BotApiConfig {
 	 */
 	@Property(key = "gameserver.botapi.farm.max_run_ms", defaultValue = "1200000")
 	public static long FARM_MAX_RUN_MS;
+
+	/**
+	 * Distance covered by one walking step per combat tick (meters). The bot closes
+	 * the gap to a target in several small steps, each one broadcast as SM_MOVE to
+	 * nearby players (visible walking instead of teleport-blink). 0 = legacy teleport.
+	 */
+	@Property(key = "gameserver.botapi.farm.walk_step_m", defaultValue = "7")
+	public static float FARM_WALK_STEP_M;
+
+	/**
+	 * HP potion granted to bots at run start (Life Potion lv30). Set 0 to disable.
+	 */
+	@Property(key = "gameserver.botapi.farm.potion_item_id", defaultValue = "162000004")
+	public static int FARM_POTION_ITEM_ID;
+
+	/**
+	 * Bots drink their potion when below this HP percentage.
+	 */
+	@Property(key = "gameserver.botapi.farm.potion_min_hp_pct", defaultValue = "35")
+	public static int FARM_POTION_MIN_HP_PCT;
+
+	/**
+	 * Potion count a bot is kept at (topped up on run start).
+	 */
+	@Property(key = "gameserver.botapi.farm.potion_stock", defaultValue = "25")
+	public static int FARM_POTION_STOCK;
+
+	/**
+	 * Every Nth basic hit the bot casts a random basic class skill (if learned, off
+	 * cooldown and with MP to spare). 0 = skills disabled.
+	 */
+	@Property(key = "gameserver.botapi.farm.skill_every_n_hits", defaultValue = "4")
+	public static int FARM_SKILL_EVERY_N_HITS;
 }
