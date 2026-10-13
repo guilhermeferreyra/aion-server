@@ -74,7 +74,9 @@ public class ClassChangeService {
 		player.getController().upgradePlayer();
 		PacketSendUtility.broadcastPacket(player, new SM_ACTION_ANIMATION(player.getObjectId(), ActionAnimation.CLASS_CHANGE, player.getLevel()), true);
 		PacketSendUtility.broadcastPacket(player, new SM_PLAYER_INFO(player));
-		SkillLearnService.learnNewSkills(player, 9, player.getLevel());
+		// admin class changes can switch between unrelated classes: drop the old class' skills and fill in all starting class skills
+		SkillLearnService.removeOtherClassSkills(player);
+		SkillLearnService.learnNewSkills(player, validate ? 9 : 1, player.getLevel());
 
 		if (updateDaevaStatus) {
 			if (!newClass.isStartingClass()) {

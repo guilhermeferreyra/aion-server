@@ -3,7 +3,10 @@ package consolecommands;
 import com.aionemu.gameserver.model.PlayerClass;
 import com.aionemu.gameserver.model.gameobjects.player.Player;
 import com.aionemu.gameserver.services.ClassChangeService;
+import com.aionemu.gameserver.utils.ChatUtil;
+import com.aionemu.gameserver.utils.PacketSendUtility;
 import com.aionemu.gameserver.utils.chathandlers.ConsoleCommand;
+import com.aionemu.gameserver.world.World;
 
 /**
  * @author ginho1, Neon
@@ -12,7 +15,7 @@ public class Changeclass extends ConsoleCommand {
 
 	public Changeclass() {
 		super("changeclass", "Changes a player's class.", """
-			<class> - Changes your target's class to the one specified (defaults to your character, if no player is targeted).
+			<class> [playerName] - Changes the class of the named player (if given), else of your target, else of your own character.
 			""");
 	}
 
@@ -22,10 +25,19 @@ public class Changeclass extends ConsoleCommand {
 			sendInfo(admin);
 			return;
 		}
-		Player player = admin.getTarget() instanceof Player target ? target : admin;
+		Player player;
+		if (params.length >= 2 && !params[1].trim().isEmpty()) {
+			player = World.getInstance().getPlayer(ChatUtil.getRealCharName(params[1].trim()));
+			if (player == null) {
+				PacketSendUtility.sendMessage(admin, "Player not found or offline: " + params[1].trim());
+				return;
+			}
+		} else {
+			player = admin.getTarget() instanceof Player target ? target : admin;
+		}
 		PlayerClass playerClass = parsePlayerClass(params[0]);
 		ClassChangeService.setClass(player, playerClass, false, true);
-		sendInfo(admin, "You have changed " + player.getName() + "'s class to " + playerClass.toString().toLowerCase() +  ".");
+		sendInfo(admin, "You have changed " + player.getName() + "'s class to " + playerClass.toString().toLowerCase() + ".");
 	}
 
 	protected static PlayerClass parsePlayerClass(String param) {

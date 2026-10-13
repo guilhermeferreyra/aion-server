@@ -74,6 +74,25 @@ public class SkillLearnService {
 		}
 	}
 
+	/**
+	 * Removes skill tree skills that neither the player's class nor its starting class can learn (e.g. leftovers after an admin class change).
+	 * Stigma, profession and non skill tree skills are kept.
+	 */
+	public static void removeOtherClassSkills(Player player) {
+		PlayerClass playerClass = player.getPlayerClass();
+		PlayerClass playerStartClass = playerClass.isStartingClass() ? null : playerClass.getStartingClass();
+		for (PlayerSkillEntry skill : player.getSkillList().getAllSkills()) {
+			int skillId = skill.getSkillId();
+			if (!skill.isNormalSkill() || !DataManager.SKILL_TREE_DATA.isLearnedSkill(skillId))
+				continue;
+			if (!DataManager.SKILL_TREE_DATA.getTemplatesForSkill(skillId, playerClass, player.getRace()).isEmpty())
+				continue;
+			if (playerStartClass != null && !DataManager.SKILL_TREE_DATA.getTemplatesForSkill(skillId, playerStartClass, player.getRace()).isEmpty())
+				continue;
+			removeSkill(player, skillId);
+		}
+	}
+
 	public static void learnTemporarySkill(Player player, int skillId, int skillLevel) {
 		player.getSkillList().addTemporarySkill(player, skillId, skillLevel);
 	}
