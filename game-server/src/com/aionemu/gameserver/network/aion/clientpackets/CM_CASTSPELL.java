@@ -16,6 +16,7 @@ import com.aionemu.gameserver.utils.audit.AuditLogger;
  */
 public class CM_CASTSPELL extends AionClientPacket {
 
+	private static final int SKILL_LOCK_TOLERANCE_MILLIS = 100;
 	private final long receiveTime = System.currentTimeMillis();
 	private int spellid;
 	// 0 - obj id, 1 - point location, 2 - unk, 3 - object not in sight(skill 1606)? 4 - unk
@@ -99,7 +100,8 @@ public class CM_CASTSPELL extends AionClientPacket {
 		if (player.getNextSkillUse() > receiveTime) {
 			int lastSkillId = player.getLastSkill().getSkillId(); // lastSkill cannot be null, as nextSkillUse is zero on the first cast
 			AuditLogger.log(player, "tried to use skill " + spellid + " " + (player.getNextSkillUse() - receiveTime) + " ms too early. Previous skill: " + lastSkillId);
-			if (player.getNextSkillUse() > System.currentTimeMillis()) {
+			// small tolerance so chained skills aren't rejected because the client's animation timer ran a few ms ahead of ours
+			if (player.getNextSkillUse() - SKILL_LOCK_TOLERANCE_MILLIS > System.currentTimeMillis()) {
 				sendPacket(SM_SYSTEM_MESSAGE.STR_SKILL_NOT_READY());
 				return;
 			}

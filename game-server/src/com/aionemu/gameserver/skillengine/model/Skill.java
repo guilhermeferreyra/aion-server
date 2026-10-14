@@ -677,8 +677,11 @@ public class Skill {
 				} else {
 					player.setHitTimeBoost(0, 0);
 				}
-				if (animation != null) // Math.max because nextSkillUse set from startCast() must not be undercut
+				if (animation != null) { // Math.max because nextSkillUse set from startCast() must not be undercut
+					if (animation.lastHitMillis() > 3000)
+						logAbnormalSkillLock(player, animation);
 					player.setNextSkillUse(Math.max(player.getNextSkillUse(), nowMillis + animation.lastHitMillis()));
+				}
 			}
 		}
 
@@ -751,6 +754,20 @@ public class Skill {
 	private boolean isHostile() {
 		SkillSubType subType = skillTemplate.getSubType();
 		return subType == SkillSubType.ATTACK || subType == SkillSubType.DEBUFF;
+	}
+
+	/**
+	 * Diagnostic for skill locks far longer than any retail animation (seen as "not ready" spam for ~30s after a normal shot).
+	 */
+	private void logAbnormalSkillLock(Player player, AnimationTimes animation) {
+		StringBuilder effects = new StringBuilder();
+		for (Effect e : player.getEffectController().getAbnormalEffects())
+			effects.append(e.getSkillId()).append(':').append(e.getSkillName()).append(", ");
+		log.warn("Abnormal skill lock for {}: skill {} ({}), motion={} speed={}, lastHit={}ms, fullDuration={}ms, attackSpeed={}/{} (rate {}), castSpeed={}, "
+			+ "animBoost={}, multiCast={}, effects=[{}]", player, skillTemplate.getSkillId(), skillTemplate.getL10n(), skillTemplate.getMotion().getName(),
+			skillTemplate.getMotion().getSpeed(), animation.lastHitMillis(), animation.fullDurationMillis(), player.getGameStats().getAttackSpeed().getCurrent(),
+			player.getGameStats().getBaseAttackSpeed(), player.getGameStats().getAttackSpeedRate(), getCastSpeedForAnimationBoostAndChargeSkills(),
+			allowAnimationBoostByCastSpeed(), getMultiCastCount(), effects);
 	}
 
 	private boolean sendCastSpellEnd(int dashStatus, List<Effect> effects) {
