@@ -44,7 +44,8 @@ public class NpcData {
 	}
 
 	private void init() {
-		boolean scalingEnabled = NpcStatsConfig.HP_MULTIPLIER != 1f || NpcStatsConfig.ATTACK_MULTIPLIER != 1f || NpcStatsConfig.DEFENSE_MULTIPLIER != 1f;
+		boolean scalingEnabled = NpcStatsConfig.HP_MULTIPLIER != 1f || NpcStatsConfig.ATTACK_MULTIPLIER != 1f || NpcStatsConfig.DEFENSE_MULTIPLIER != 1f
+			|| NpcStatsConfig.BOSS_HP_MULTIPLIER != 1f || NpcStatsConfig.BOSS_ATTACK_MULTIPLIER != 1f || NpcStatsConfig.BOSS_DEFENSE_MULTIPLIER != 1f;
 		int scaledNpcs = 0;
 		int scaledSamples = 0;
 		for (NpcTemplate npc : npcs) {
@@ -96,7 +97,7 @@ public class NpcData {
 				if (scalingEnabled) {
 					int beforeHp = template.getMaxHp();
 					int beforeAtk = template.getAttack();
-					applyScaling(template);
+					applyScaling(template, rating.ordinal() >= NpcStatsConfig.BOSS_MIN_RATING.ordinal());
 					scaledNpcs++;
 					if (scaledSamples < 3) {
 						scaledSamples++;
@@ -109,17 +110,24 @@ public class NpcData {
 				functionDialogIds.addAll(npc.getFuncDialogIds());
 		}
 		if (scalingEnabled)
-			LoggerFactory.getLogger(NpcData.class).info("NpcStatsConfig: scaled {} non-pet NPC templates (hp x{}, attack x{}, defense x{})", scaledNpcs, NpcStatsConfig.HP_MULTIPLIER,
-				NpcStatsConfig.ATTACK_MULTIPLIER, NpcStatsConfig.DEFENSE_MULTIPLIER);
+			LoggerFactory.getLogger(NpcData.class).info("NpcStatsConfig: scaled {} non-pet NPC templates (hp x{}, attack x{}, defense x{}; {}+ bosses extra hp x{}, attack x{}, defense x{})",
+				scaledNpcs, NpcStatsConfig.HP_MULTIPLIER, NpcStatsConfig.ATTACK_MULTIPLIER, NpcStatsConfig.DEFENSE_MULTIPLIER, NpcStatsConfig.BOSS_MIN_RATING,
+				NpcStatsConfig.BOSS_HP_MULTIPLIER, NpcStatsConfig.BOSS_ATTACK_MULTIPLIER, NpcStatsConfig.BOSS_DEFENSE_MULTIPLIER);
 		npcs = null;
 	}
 
-	private static void applyScaling(StatsTemplate t) {
-		t.setMaxHp(scale(t.getMaxHp(), NpcStatsConfig.HP_MULTIPLIER));
-		t.setAttack(scale(t.getAttack(), NpcStatsConfig.ATTACK_MULTIPLIER));
-		t.setMagicalAttack(scale(t.getMagicalAttack(), NpcStatsConfig.ATTACK_MULTIPLIER));
-		t.setPdef(scale(t.getPdef(), NpcStatsConfig.DEFENSE_MULTIPLIER));
-		t.setMdef(scale(t.getMdef(), NpcStatsConfig.DEFENSE_MULTIPLIER));
+	private static void applyScaling(StatsTemplate t, boolean isBoss) {
+		float hp = NpcStatsConfig.HP_MULTIPLIER, attack = NpcStatsConfig.ATTACK_MULTIPLIER, defense = NpcStatsConfig.DEFENSE_MULTIPLIER;
+		if (isBoss) {
+			hp *= NpcStatsConfig.BOSS_HP_MULTIPLIER;
+			attack *= NpcStatsConfig.BOSS_ATTACK_MULTIPLIER;
+			defense *= NpcStatsConfig.BOSS_DEFENSE_MULTIPLIER;
+		}
+		t.setMaxHp(scale(t.getMaxHp(), hp));
+		t.setAttack(scale(t.getAttack(), attack));
+		t.setMagicalAttack(scale(t.getMagicalAttack(), attack));
+		t.setPdef(scale(t.getPdef(), defense));
+		t.setMdef(scale(t.getMdef(), defense));
 	}
 
 	private static int scale(int value, float multiplier) {
